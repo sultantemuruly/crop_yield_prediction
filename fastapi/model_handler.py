@@ -1,17 +1,17 @@
+# type: ignore
+
 from pathlib import Path
-from pydantic import BaseModel
-from tensorflow.keras.models import load_model
 import joblib
+
+import pandas as pd
 import numpy as np
+from tensorflow.keras.models import load_model
+from tensorflow.keras.callbacks import EarlyStopping
 
+from typing import List
+from types import PredictionInput, TrainingInput
 
-class PredictionInput(BaseModel):
-    area: str
-    item: str
-    rainfall: float
-    pesticides: float
-    temp: float
-    year: int
+from datetime import datetime
 
 
 base_dir = Path(__file__).resolve().parent
@@ -73,3 +73,37 @@ def preprocess_input(
 
     # Reshape for LSTM input (1, 1, num_features)
     return full_sequence_scaled.reshape(1, 1, final_row_array.shape[1])
+
+
+def train_model(data: List[TrainingInput]):
+    df = pd.DataFrame([d.dict() for d in data])
+
+    # encode
+    df["area"] = le_area.transform(df["area"])
+    df["item"] = le_item.transform(df["item"])
+
+    X = df[["area", "item", "rainfall", "pesticides", "temp", "year"]]
+    y = df["yield_value"].values.reshape(-1, 1)
+
+    # normalize
+    X_scaled = scaler_features.transform(X)
+    y_scaled = scaler_target.transform(y)
+
+    X_lstm = X_scaled.reshape((X_scaled.shape[0], 1, X_scaled.shape[1]))
+
+    model.compile(optimizer="adam", loss="mean_squared_error")
+
+    early_stop = EarlyStopping(patience=5, restore_best_weights=True)
+
+    model.fit(
+        X_lstm,
+        y_scaled,
+        epochs=50,
+        batch_size=16,
+        validation_split=0.2,
+        callbacks=[early_stop],
+        verbose=1,
+    )
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    model.save(model_dir / f"lstm_yield_model_{timestamp}.h5")
