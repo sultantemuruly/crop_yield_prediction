@@ -75,7 +75,7 @@ def preprocess_input(
     return full_sequence_scaled.reshape(1, 1, final_row_array.shape[1])
 
 
-def train_model(data: List[TrainingInput]):
+def train_model(data: List[TrainingInput], batch_size):
     df = pd.DataFrame([d.dict() for d in data])
 
     # encode
@@ -99,7 +99,7 @@ def train_model(data: List[TrainingInput]):
         X_lstm,
         y_scaled,
         epochs=50,
-        batch_size=16,
+        batch_size=batch_size,
         validation_split=0.2,
         callbacks=[early_stop],
         verbose=1,

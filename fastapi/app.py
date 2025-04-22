@@ -38,9 +38,13 @@ def train(training_data: List[TrainingInput]):
                 content={"error": "Training data must include at least one record."},
             )
 
-        train_model(training_data)
+        # Smart batch size: min of data length or 16
+        batch_size = min(len(training_data), 16)
+        train_model(training_data, batch_size=batch_size)
+
         return {
-            "message": f"Model trained successfully on {len(training_data)} records."
+            "message": f"Model trained successfully on {len(training_data)} records.",
+            "batch_size_used": batch_size,
         }
 
     except Exception as e:
