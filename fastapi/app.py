@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 
 from model_handler import predict, train_model
 
-from types import PredictionInput, TrainingInput
+from schemas import PredictionInput, TrainingInput
 from typing import List
 
 app = FastAPI()

@@ -9,7 +9,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.callbacks import EarlyStopping
 
 from typing import List
-from types import PredictionInput, TrainingInput
+from schemas import PredictionInput, TrainingInput
 
 from datetime import datetime
 
