@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from database import Base
 
 
@@ -12,4 +12,5 @@ class Info(Base):
     pesticides = Column(Integer)
     temp = Column(Integer)
     year = Column(Integer)
-    yield_value = Column(Integer, nullable=True)
+    yield_value = Column(Integer)
+    is_trained = Column(Boolean, default=False)
