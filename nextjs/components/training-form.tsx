@@ -52,16 +52,18 @@ export default function TrainingForm() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const url = process.env.NEXT_PUBLIC_FASTAPI_URL || "";
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      area: "India",
-      item: "Wheat",
-      rainfall: 150,
-      pesticides: 10,
-      temp: 25,
+      area: "Albania",
+      item: "Maize",
+      rainfall: 1485,
+      pesticides: 121,
+      temp: 16,
       year: new Date().getFullYear(),
-      yield_value: 5,
+      yield_value: 36613,
     },
   });
 
@@ -70,13 +72,18 @@ export default function TrainingForm() {
     setError(null);
     setSuccess(false);
 
+    const payload = {
+      ...values,
+      is_trained: false,
+    };
+
     try {
-      const response = await fetch("/api/train", {
+      const response = await fetch(`${url}/info`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -103,9 +110,7 @@ export default function TrainingForm() {
       </div>
 
       <Form {...form}>
-        <form
-          /* onSubmit={form.handleSubmit(onSubmit)} */ className="space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}

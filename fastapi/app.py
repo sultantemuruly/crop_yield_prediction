@@ -14,8 +14,20 @@ from typing import List
 from apscheduler.schedulers.background import BackgroundScheduler
 import time
 
+from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 Base.metadata.create_all(bind=engine)
+
 scheduler = BackgroundScheduler()
 
 
@@ -97,8 +109,8 @@ def scheduled_job():
         print(f"[{time.strftime('%X')}] No data found for training.")
 
 
-# Run every 60 seconds
-scheduler.add_job(scheduled_job, "interval", seconds=60)
+# Run every 24 hours (86400 seconds)
+scheduler.add_job(scheduled_job, "interval", seconds=(86400))
 scheduler.start()
 
 
@@ -147,7 +159,7 @@ def train(training_data: List[TrainingInput], db: Session = Depends(get_db)):
     )
 
 
-@app.post("/info/", response_model=InfoResponse)  # for testing
+@app.post("/info", response_model=InfoResponse)
 def create_info(info: InfoCreate, db: Session = Depends(get_db)):
     db_info = Info(**info.dict())
     db.add(db_info)

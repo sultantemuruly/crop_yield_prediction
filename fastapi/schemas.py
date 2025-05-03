@@ -31,7 +31,7 @@ class InfoBase(BaseModel):
     temp: int
     year: int
     yield_value: Optional[int] = None
-    is_trained: bool
+    is_trained: Optional[bool] = False
 
 
 class InfoCreate(InfoBase):

@@ -47,6 +47,8 @@ export default function PredictionForm() {
   const [prediction, setPrediction] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const url = process.env.NEXT_PUBLIC_FASTAPI_URL || "";
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -64,7 +66,7 @@ export default function PredictionForm() {
     setError(null);
 
     try {
-      const response = await fetch("/api/predict", {
+      const response = await fetch(`${url}/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +79,7 @@ export default function PredictionForm() {
       }
 
       const data = await response.json();
-      setPrediction(data.yield_value);
+      setPrediction(data.predicted_yield);
     } catch (err) {
       console.error(err);
       setError("An error occurred while getting the prediction");
@@ -94,9 +96,7 @@ export default function PredictionForm() {
       </div>
 
       <Form {...form}>
-        <form
-          /* onSubmit={form.handleSubmit(onSubmit)} */ className="space-y-6"
-        >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
