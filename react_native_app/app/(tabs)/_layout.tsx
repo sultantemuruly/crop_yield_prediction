@@ -9,6 +9,8 @@ import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
@@ -38,11 +40,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="about"
+        name="predict"
         options={{
-          title: "About",
+          title: "Get Model Prediction",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="paperplane.fill" color={color} />
+            <FontAwesome name="gears" size={28} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="train"
+        options={{
+          title: "Train Model",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="lightbulb-o" size={28} color={color} />
           ),
         }}
       />
